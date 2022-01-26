@@ -22,11 +22,21 @@ namespace NewHealthApp
         {
             massInKg = massKg;
             heightInCm = heightCm;
-            float heightInM = heightCm / 100f;
+            CalculateBMI();
+            idNumber = id;
+        }
+
+        void CalculateBMI()
+        {
+            float heightInM = heightInCm / 100f;
             //bmi is the mass in kg divided by the heightInM squared
             //Math.Pow returns the first argument raised to the power of the second argument
             //as a double so we have to cast it as a float
-            bmi = massKg / (float)Math.Pow(heightInM,2);
+            bmi = massInKg / (float)Math.Pow(heightInM, 2);
+        }
+        public HealthData(float bmi, int id)
+        {
+            this.bmi = bmi;
             idNumber = id;
         }
         /// <summary>
@@ -42,6 +52,34 @@ namespace NewHealthApp
         public int IDNumber
         {
             get { return idNumber; }
+        }
+        public float MassInKg
+        {
+            set { massInKg = value;
+                if(heightInCm != 0) // != stands for not equal
+                {
+                    CalculateBMI();
+                }
+                else
+                {
+                    //letting the system have a default value thatlets us know we cant find the bmi
+                    bmi = -1;
+                }
+            }
+            get { return massInKg; }
+        }
+        public int HeightInCM
+        {
+            get { return heightInCm; }
+            set
+            {
+                heightInCm = value;
+                if (massInKg != 0)
+                {
+                    CalculateBMI();
+                }
+                else bmi = -1; // -1 tells us we have an error
+            }
         }
     } 
     class Program
@@ -96,9 +134,14 @@ namespace NewHealthApp
             // != means not equal
             while ((input = textReader.ReadLine()) != null)
             {
-                Console.WriteLine("Text from file " + input);
+                // Console.WriteLine("Text from file " + input);
+                //Split input into two parts based on the position of the tab character
+                string[] parts = input.Split('\t');
+                Console.WriteLine("Member with ID " + parts[1] + " has BMI " + parts[0]);
             }
             textReader.Close();
+
+
             //The following line I will delete after my program is working
             Console.ReadLine();
         }
